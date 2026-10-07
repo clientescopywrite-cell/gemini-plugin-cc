@@ -32,7 +32,23 @@ use the Gemini CLI instead by setting `GEMINI_COMPANION_ENGINE=gemini-cli`.
   [official install guide](https://antigravity.google/docs/getting-started?tab=cli).
 - Git, for reviews.
 
-Tested on Windows with agy 1.3.1. macOS and Linux should work but have not been tested yet.
+## Status
+
+Early release (0.1.1). Verified on 2026-10-07 on Windows 10 with Claude Code 2.1.291, the Antigravity
+CLI 1.3.1 and Node.js 22:
+
+- installed from this marketplace into a clean Claude Code configuration;
+- `/gemini:status` and `/gemini:rescue` end to end through Claude Code (command, subagent, companion, agy);
+- the smoke test (`npm run smoke`): setup with a live probe, read-only tasks, two background jobs in
+  parallel, a write task that fixes a bug and runs `npm test`, resume, both reviews, cancel, timeout and
+  the stop-time review gate.
+
+Typical durations across three runs on that machine (they vary with Gemini's load): 30 to 55 seconds
+for a small read-only task, 45 to 70 seconds for a write task that also runs the tests, 1 to 2.5 minutes
+for a review. Cancel and timeouts stop the engine within a few seconds.
+
+Not verified yet: macOS and Linux, and the Gemini CLI engine with a real API key (only its error path
+was tested).
 
 ## Install
 
@@ -100,6 +116,29 @@ isolated git worktree and review the diff before you commit or push.
 | `GEMINI_COMPANION_HOME` | Where job state lives (default `~/.claude/gemini-companion`). |
 | `GEMINI_CLI_ENTRY` | Path to the Gemini CLI entry script, when it is not found automatically. |
 
+## Known limitations
+
+- Commands outside the allowlist (for example `node -e`, `curl` or project scripts other than test,
+  lint, build and typecheck) are blocked; Gemini says in its report what it would have needed to run.
+- Gemini runs one shell command at a time; chains with `&&`, `;`, pipes or redirection are blocked.
+- The `permissions.allow` rules that setup adds also apply to your interactive `agy` sessions.
+- `/gemini:status` inside a Claude session only lists the jobs started from that session, and ending
+  the session removes them from the list (same behavior as the Codex plugin).
+- The `pro` and `flash` model aliases point to the current agy model names; run `agy models` for the full list.
+- Gemini answers in the language your agy setup and your prompt lead it to; the plugin does not force one.
+- The `gemini-monitor` mod uses Claude Code's early-access function hooks, which may change between releases.
+
+## Troubleshooting
+
+| Symptom | What to do |
+| --- | --- |
+| `agy returned no answer: ... headless mode cannot prompt` | A command needed a permission rule that is missing. Run `/gemini:setup` to restore the rules. |
+| `agy` ignores the permission rules | `~/.gemini/antigravity-cli/settings.json` must be saved without a byte-order mark (BOM); agy falls back to defaults otherwise. |
+| `/gemini:setup` reports agy is not signed in | Run `/gemini:setup --login` (or `agy` in a terminal) and sign in once. |
+| A job shows as orphaned in `/gemini:status` | Its worker process ended without recording a result (reboot or external kill). Start it again. |
+| On Windows, `/gemini:cancel` or a timeout leaves Gemini running | Update to 0.1.1 or later (`/plugin marketplace update gemini-plugin-cc`); older versions sent taskkill through Git Bash, which broke its flags. |
+| `/plugin marketplace add` fails with `Filename too long` on Windows | The Claude Code config folder path is too long for Git; use a shorter path or enable `git config --global core.longpaths true`. |
+
 ## Uninstall
 
 ```text
@@ -113,8 +152,11 @@ from `~/.gemini/antigravity-cli/settings.json`.
 ## Development
 
 ```bash
-npm test   # syntax check + guard and companion tests
+npm test        # syntax check + guard and companion tests (no network)
+npm run smoke   # end-to-end checks against the real engine; needs a signed-in agy and uses your Gemini quota
 ```
+
+See `CHANGELOG.md` for the release history.
 
 ## Maintainers
 

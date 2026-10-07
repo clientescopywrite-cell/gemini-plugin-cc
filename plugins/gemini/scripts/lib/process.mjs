@@ -64,9 +64,12 @@ export function terminateProcessTree(pid, options = {}) {
   const killImpl = options.killImpl ?? process.kill.bind(process);
 
   if (platform === "win32") {
+    // shell: false is required: under Git Bash (SHELL set, as in Claude Code's Bash tool on
+    // Windows) the shell rewrites "/PID", "/T" and "/F" into file paths and taskkill fails.
     const result = runCommandImpl("taskkill", ["/PID", String(pid), "/T", "/F"], {
       cwd: options.cwd,
-      env: options.env
+      env: options.env,
+      shell: false
     });
 
     if (!result.error && result.status === 0) {

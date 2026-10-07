@@ -154,6 +154,15 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function isProcessRunning(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return error?.code === "EPERM";
+  }
+}
+
 function shorten(text, limit = 96) {
   const normalized = String(text ?? "").trim().replace(/\s+/g, " ");
   if (!normalized) {
@@ -746,18 +755,27 @@ async function handleCancel(argv) {
     completedAt
   });
 
-  for (const pid of [existing.childPid ?? job.childPid, existing.pid ?? job.pid]) {
-    if (Number.isInteger(pid) && pid !== process.pid) {
+  const pids = [existing.childPid ?? job.childPid, existing.pid ?? job.pid].filter((pid) => Number.isInteger(pid) && pid !== process.pid);
+  const stopAll = () => {
+    for (const pid of pids) {
       try {
         terminateProcessTree(pid);
       } catch {
         // process already gone
       }
     }
+  };
+  stopAll();
+  // Windows can take a moment to tear a process tree down; confirm and retry once.
+  await sleep(1000);
+  if (pids.some(isProcessRunning)) {
+    stopAll();
+    await sleep(1000);
   }
-  appendLogLine(job.logFile, "Cancelled by user.");
+  const engineStopped = !pids.some(isProcessRunning);
+  appendLogLine(job.logFile, engineStopped ? "Cancelled by user." : "Cancelled by user, but a process is still running.");
 
-  outputCommandResult({ jobId: job.id, status: "cancelled", title: job.title }, renderCancelReport(nextJob), options.json);
+  outputCommandResult({ jobId: job.id, status: "cancelled", title: job.title, engineStopped }, renderCancelReport(nextJob), options.json);
 }
 
 async function main() {

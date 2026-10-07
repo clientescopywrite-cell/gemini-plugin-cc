@@ -1,6 +1,6 @@
 {
   "name": "gemini",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Use Gemini (through the Antigravity CLI) from Claude Code to review code or delegate tasks.",
   "author": {
     "name": "gemini-plugin-cc contributors"

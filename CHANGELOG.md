@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2 - 2026-10-07
+
+- New `GEMINI_COMPANION_LANGUAGE` setting (for example `pt-BR`): Gemini writes its answers, task reports,
+  review findings and the stop-gate reason in that language. JSON keys and the `verdict` and `severity`
+  values stay as the schema defines them, and the stop gate keeps its `ALLOW:`/`BLOCK:` prefix. Values
+  are validated, so the setting cannot inject prompt text. Unset, nothing changes.
+- `/gemini:setup` shows the response language.
+
 ## 0.1.1 - 2026-10-07
 
 - Fix: on Windows, `/gemini:cancel` and `--timeout-minutes` did not stop Gemini when the companion ran

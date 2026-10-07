@@ -185,6 +185,7 @@ export function renderSetupReport(report) {
     `- auth: ${report.auth.detail}`,
     ...(report.probe ? [`- live probe: ${report.probe.ok ? "ok" : "failed"} (${report.probe.detail})`] : []),
     `- policies: ${report.policies.detail}`,
+    `- response language: ${report.language?.detail ?? "follows the language of each request"}`,
     `- review gate: ${report.reviewGateEnabled ? "enabled" : "disabled"}`,
     `- job state: ${report.stateDir}`,
     ""

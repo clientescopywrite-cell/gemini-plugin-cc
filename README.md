@@ -34,7 +34,7 @@ use the Gemini CLI instead by setting `GEMINI_COMPANION_ENGINE=gemini-cli`.
 
 ## Status
 
-Early release (0.1.1). Verified on 2026-10-07 on Windows 10 with Claude Code 2.1.291, the Antigravity
+Early release (0.1.2). Verified on 2026-10-07 on Windows 10 with Claude Code 2.1.291, the Antigravity
 CLI 1.3.1 and Node.js 22:
 
 - installed from this marketplace into a clean Claude Code configuration;
@@ -110,9 +110,13 @@ isolated git worktree and review the diff before you commit or push.
 
 ## Configuration
 
+Set these in the `env` block of your Claude Code settings (`~/.claude/settings.json`) so every
+command picks them up, for example `"env": { "GEMINI_COMPANION_LANGUAGE": "pt-BR" }`.
+
 | Variable | Effect |
 | --- | --- |
 | `GEMINI_COMPANION_ENGINE=gemini-cli` | Use the Gemini CLI (API key, Vertex AI or Code Assist license) instead of agy. |
+| `GEMINI_COMPANION_LANGUAGE` | Language for Gemini's answers, reports and review findings (for example `pt-BR`). Unset, Gemini follows the language of each request, and reviews without focus text come back in English. |
 | `GEMINI_COMPANION_HOME` | Where job state lives (default `~/.claude/gemini-companion`). |
 | `GEMINI_CLI_ENTRY` | Path to the Gemini CLI entry script, when it is not found automatically. |
 
@@ -125,7 +129,8 @@ isolated git worktree and review the diff before you commit or push.
 - `/gemini:status` inside a Claude session only lists the jobs started from that session, and ending
   the session removes them from the list (same behavior as the Codex plugin).
 - The `pro` and `flash` model aliases point to the current agy model names; run `agy models` for the full list.
-- Gemini answers in the language your agy setup and your prompt lead it to; the plugin does not force one.
+- Command labels (status tables, setup report) are in English. Gemini's own answers follow
+  `GEMINI_COMPANION_LANGUAGE` when it is set, or the language of each request.
 - The `gemini-monitor` mod uses Claude Code's early-access function hooks, which may change between releases.
 
 ## Troubleshooting

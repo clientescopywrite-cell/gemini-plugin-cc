@@ -37,5 +37,5 @@ The JSON follows this schema:
 {{OUTPUT_SCHEMA}}
 Use `needs-attention` if there is any issue worth blocking on; otherwise use `approve`.
 Every finding includes the file, `line_start` and `line_end`, a confidence from 0 to 1 and a concrete recommendation.
-Write `summary`, `title`, `body`, `recommendation` and `next_steps` in the same language as the user focus when it is given, otherwise in English.
+{{LANGUAGE_RULE}}
 </structured_output_contract>

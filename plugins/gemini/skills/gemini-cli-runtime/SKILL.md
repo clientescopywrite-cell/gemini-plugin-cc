@@ -28,6 +28,7 @@ How the runtime runs Gemini:
 - The `claude-companion-guard` guard (installed into agy by setup) only acts on companion runs: it blocks push, branch switching, history rewrites, edits under `.git/`, remote access, infrastructure, databases, reads and writes outside the repository, and commands outside the allowed list (read-only, tests, lint, typecheck, build, `git add`, `git commit`), always one command at a time. Gemini receives the reason for each block and keeps going.
 - Reviews use `--json-schema`, so the verdict comes back structured.
 - Every new task gets a short preamble with these rules and asks for a final report (what was done, touched files, verification, pending items). `--raw` turns the preamble off.
+- When `GEMINI_COMPANION_LANGUAGE` is set (for example `pt-BR`), the preamble and the review prompts ask Gemini to answer in that language; do not add language instructions to the forwarded text yourself.
 
 Command selection:
 - Use exactly one `task` invocation per rescue handoff.

@@ -22,6 +22,7 @@ import {
   runEngineTurn
 } from "./lib/engine.mjs";
 import { readStdinIfPiped } from "./lib/fs.mjs";
+import { resolveResponseLanguage, reviewLanguageRule, taskLanguageRule } from "./lib/language.mjs";
 import { collectReviewContext, ensureGitRepository, resolveReviewTarget } from "./lib/git.mjs";
 import { binaryAvailable, terminateProcessTree } from "./lib/process.mjs";
 import { interpolateTemplate, loadPromptTemplate } from "./lib/prompts.mjs";
@@ -206,6 +207,13 @@ async function buildSetupReport(cwd, actionsTaken = [], options = {}) {
   const authStatus = getEngineAuthStatus();
   const policyStatus = engineStatus.available ? getEnginePolicyStatus() : { ok: false, detail: "engine unavailable" };
   const config = getConfig(workspaceRoot);
+  let language;
+  try {
+    const value = resolveResponseLanguage();
+    language = { ok: true, detail: value ? `${value} (GEMINI_COMPANION_LANGUAGE)` : "follows the language of each request" };
+  } catch (error) {
+    language = { ok: false, detail: error.message };
+  }
 
   let probe = null;
   if (engineStatus.available && authStatus.loggedIn && policyStatus.ok && !options.skipProbe) {
@@ -230,9 +238,14 @@ async function buildSetupReport(cwd, actionsTaken = [], options = {}) {
   if (!config.stopReviewGate) {
     nextSteps.push("Optional: `/gemini:setup --enable-review-gate` makes Gemini review every turn with edits before Claude stops.");
   }
+  if (!language.ok) {
+    nextSteps.push("Fix GEMINI_COMPANION_LANGUAGE (for example `pt-BR`) or unset it.");
+  }
 
   return {
-    ready: nodeStatus.available && engineStatus.available && authStatus.loggedIn && policyStatus.ok && (probe ? probe.ok : true),
+    ready:
+      nodeStatus.available && engineStatus.available && authStatus.loggedIn && policyStatus.ok && language.ok && (probe ? probe.ok : true),
+    language,
     engine: ENGINE_LABEL,
     node: nodeStatus,
     npm: npmStatus,
@@ -294,7 +307,8 @@ function buildReviewPrompt(templateName, context, focusText) {
     USER_FOCUS: focusText || "No extra focus provided.",
     REVIEW_COLLECTION_GUIDANCE: context.collectionGuidance,
     REVIEW_INPUT: context.content,
-    OUTPUT_SCHEMA: readOutputSchema(REVIEW_SCHEMA)
+    OUTPUT_SCHEMA: readOutputSchema(REVIEW_SCHEMA),
+    LANGUAGE_RULE: reviewLanguageRule(resolveResponseLanguage())
   });
 }
 
@@ -376,6 +390,7 @@ async function handleReviewCommand(argv, config) {
   const workspaceRoot = resolveCommandWorkspace(options);
   const focusText = positionals.join(" ").trim();
   const effort = normalizeEffort(options.effort);
+  resolveResponseLanguage();
   const target = resolveReviewTarget(cwd, { base: options.base, scope: options.scope });
   const metadata = buildReviewJobMetadata(config.reviewName, target);
   const job = createCompanionJob({
@@ -415,9 +430,12 @@ function buildExecutionPreamble(write) {
       : "Mode: read-only. Do not edit files. Allowed commands: git status/diff/log/show, ls, cat and rg; investigate and answer.",
     "Run one command at a time, without &&, ;, pipes or redirection. If a command is blocked, do not stop: continue without it and report at the end what you would have needed to run.",
     "When you finish, reply with: what you did, the files you changed (if any), the verification commands you ran and their results, and what is still pending.",
+    taskLanguageRule(resolveResponseLanguage()),
     "</execution_context>",
     ""
-  ].join("\n");
+  ]
+    .filter((line) => line !== null)
+    .join("\n");
 }
 
 function buildTaskPrompt(prompt, { write, raw, resume }) {
@@ -596,6 +614,7 @@ async function handleTask(argv) {
   const workspaceRoot = resolveCommandWorkspace(options);
   const model = normalizeRequestedModel(options.model);
   const effort = normalizeEffort(options.effort);
+  resolveResponseLanguage();
   const prompt = readTaskPrompt(cwd, options, positionals);
   const timeoutMinutes = Number(options["timeout-minutes"] ?? 0);
   const timeoutMs = Number.isFinite(timeoutMinutes) && timeoutMinutes > 0 ? timeoutMinutes * 60000 : null;

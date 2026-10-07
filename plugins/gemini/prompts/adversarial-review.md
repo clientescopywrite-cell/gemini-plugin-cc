@@ -70,5 +70,5 @@ Use `needs-attention` if there is any material risk worth blocking on.
 Use `approve` only if you cannot support any substantive adversarial finding from the context.
 Every finding includes the affected file, `line_start` and `line_end`, a confidence from 0 to 1 and a concrete recommendation.
 Write the summary like a terse ship/no-ship assessment, not a neutral recap.
-Write `summary`, `title`, `body`, `recommendation` and `next_steps` in the same language as the user focus when it is given, otherwise in English.
+{{LANGUAGE_RULE}}
 </structured_output_contract>

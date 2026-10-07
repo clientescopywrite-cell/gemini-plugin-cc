@@ -17,6 +17,7 @@ Your first line must be exactly one of:
 - ALLOW: <short reason>
 - BLOCK: <short reason>
 Do not put anything before that first line.
+{{LANGUAGE_RULE}}
 </compact_output_contract>
 
 <default_follow_through_policy>

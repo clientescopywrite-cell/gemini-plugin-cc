@@ -7,6 +7,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 import { getEngineAuthStatus, getEngineAvailability } from "./lib/engine.mjs";
+import { resolveResponseLanguage, stopGateLanguageRule } from "./lib/language.mjs";
 import { interpolateTemplate, loadPromptTemplate } from "./lib/prompts.mjs";
 import { getConfig, listJobs } from "./lib/state.mjs";
 import { sortJobsNewestFirst } from "./lib/job-control.mjs";
@@ -46,8 +47,15 @@ function filterJobsForCurrentSession(jobs, input = {}) {
 function buildStopReviewPrompt(input = {}) {
   const lastAssistantMessage = String(input.last_assistant_message ?? "").trim();
   const template = loadPromptTemplate(ROOT_DIR, "stop-review-gate");
+  let languageRule = "";
+  try {
+    languageRule = stopGateLanguageRule(resolveResponseLanguage());
+  } catch {
+    // an invalid GEMINI_COMPANION_LANGUAGE must not break the gate
+  }
   return interpolateTemplate(template, {
-    CLAUDE_RESPONSE_BLOCK: lastAssistantMessage ? ["Previous Claude response:", lastAssistantMessage].join("\n") : ""
+    CLAUDE_RESPONSE_BLOCK: lastAssistantMessage ? ["Previous Claude response:", lastAssistantMessage].join("\n") : "",
+    LANGUAGE_RULE: languageRule
   });
 }
 

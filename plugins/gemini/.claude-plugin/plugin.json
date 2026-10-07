@@ -1,0 +1,12 @@
+{
+  "name": "gemini",
+  "version": "0.1.0",
+  "description": "Use Gemini (through the Antigravity CLI) from Claude Code to review code or delegate tasks.",
+  "author": {
+    "name": "gemini-plugin-cc contributors"
+  },
+  "homepage": "https://github.com/clientescopywrite-cell/gemini-plugin-cc",
+  "repository": "https://github.com/clientescopywrite-cell/gemini-plugin-cc",
+  "license": "Apache-2.0",
+  "keywords": ["gemini", "antigravity", "code-review", "delegation"]
+}

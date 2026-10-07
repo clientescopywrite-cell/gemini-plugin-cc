@@ -1,0 +1,12 @@
+{
+  "name": "gemini-monitor",
+  "version": "0.1.0",
+  "description": "Live pane, status line and notifications for gemini plugin jobs; wakes Claude when a background job finishes.",
+  "author": {
+    "name": "gemini-plugin-cc contributors"
+  },
+  "homepage": "https://github.com/clientescopywrite-cell/gemini-plugin-cc",
+  "repository": "https://github.com/clientescopywrite-cell/gemini-plugin-cc",
+  "license": "Apache-2.0",
+  "types": "./types/index.d.ts"
+}

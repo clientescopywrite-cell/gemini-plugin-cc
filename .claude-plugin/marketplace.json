@@ -1,0 +1,19 @@
+{
+  "name": "gemini-plugin-cc",
+  "description": "Use Gemini from Claude Code: delegate tasks, run reviews, and follow jobs live.",
+  "owner": {
+    "name": "gemini-plugin-cc contributors"
+  },
+  "plugins": [
+    {
+      "name": "gemini",
+      "source": "./plugins/gemini",
+      "description": "Delegate tasks to Gemini and run Gemini code reviews from Claude Code (Antigravity CLI engine)."
+    },
+    {
+      "name": "gemini-monitor",
+      "source": "./plugins/gemini-monitor",
+      "description": "Live pane, status line and notifications for gemini plugin jobs. Needs Claude Code 2.1.291 or later."
+    }
+  ]
+}

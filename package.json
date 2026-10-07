@@ -1,0 +1,15 @@
+{
+  "name": "gemini-plugin-cc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Use Gemini from Claude Code to review code or delegate tasks.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18.18"
+  },
+  "scripts": {
+    "check": "node scripts/check-syntax.mjs",
+    "test": "node scripts/check-syntax.mjs && node --test tests/guard.test.mjs tests/companion.test.mjs"
+  }
+}

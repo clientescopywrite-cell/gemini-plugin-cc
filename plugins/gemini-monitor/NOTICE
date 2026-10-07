@@ -1,0 +1,16 @@
+gemini-plugin-cc
+Copyright 2026 gemini-plugin-cc contributors
+
+This project includes code adapted from the Codex plugin for Claude Code
+(https://github.com/openai/codex-plugin-cc, version 1.0.6),
+Copyright 2026 OpenAI, licensed under the Apache License, Version 2.0.
+
+Changes from the original: the transport was replaced by the Antigravity CLI
+(agy) in headless stream-json mode, with the Gemini CLI as an alternative
+engine; the native review was replaced by prompt-based reviews with an enforced
+JSON schema; the transfer command was removed; a PreToolUse guard for agy and
+Gemini CLI policy files were added; the gemini-monitor mod was added.
+
+This project is not affiliated with, endorsed by, or sponsored by Google,
+Anthropic, or OpenAI. Gemini and Antigravity are trademarks of Google LLC;
+Claude and Claude Code are trademarks of Anthropic, PBC.

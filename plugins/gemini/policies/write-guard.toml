@@ -1,0 +1,74 @@
+# Gemini CLI engine only (GEMINI_COMPANION_ENGINE=gemini-cli): policy for
+# write jobs (--approval-mode yolo). This is a best-effort deny list; the real
+# protection is running Gemini in an isolated worktree. Applies to every mode.
+
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = [
+  "git push",
+  "git remote",
+  "git reset",
+  "git clean",
+  "git checkout",
+  "git switch",
+  "git restore",
+  "git stash",
+  "git branch -D",
+  "git branch -d",
+  "git branch --delete",
+  "git branch -m",
+  "git branch -M",
+  "git worktree",
+  "git rebase",
+  "git merge",
+  "git cherry-pick",
+  "git revert",
+  "git tag",
+  "git filter-branch",
+  "git filter-repo",
+  "git update-ref",
+  "git config",
+  "git gc",
+  "git reflog",
+  "git submodule"
+]
+decision = "deny"
+priority = 900
+denyMessage = "Blocked by the Claude Code gemini plugin: Git commands that publish, switch branches, rewrite history or discard work are left to Claude. Only make local edits and commits."
+
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = [
+  "ssh",
+  "scp",
+  "sftp",
+  "rsync",
+  "docker",
+  "docker-compose",
+  "podman",
+  "kubectl",
+  "helm",
+  "terraform",
+  "gh ",
+  "npm publish",
+  "pnpm publish",
+  "yarn publish",
+  "npx prisma migrate",
+  "npx prisma db",
+  "prisma migrate",
+  "prisma db",
+  "psql",
+  "mysql",
+  "mongosh",
+  "shutdown",
+  "Restart-Computer",
+  "Stop-Computer",
+  "diskpart",
+  "format ",
+  "reg add",
+  "reg delete",
+  "setx"
+]
+decision = "deny"
+priority = 900
+denyMessage = "Blocked by the Claude Code gemini plugin: remote access, infrastructure, publishing and database changes are left to Claude and the user."

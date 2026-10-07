@@ -1,0 +1,21 @@
+# Gemini CLI engine only (GEMINI_COMPANION_ENGINE=gemini-cli): policy for
+# read-only jobs (--approval-mode plan). Plan mode already blocks writes and
+# shell commands; this rule only allows read-only git commands, so reviews of
+# large diffs can collect the diff themselves.
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = [
+  "git status",
+  "git diff",
+  "git log",
+  "git show",
+  "git blame",
+  "git ls-files",
+  "git rev-parse",
+  "git merge-base",
+  "git branch --show-current",
+  "git cat-file"
+]
+decision = "allow"
+priority = 500
+modes = ["plan"]

@@ -1,0 +1,19 @@
+# Dependencies and local tooling
+node_modules/
+
+# Type declarations Claude Code writes next to a loaded mod (may list local MCP tools)
+plugins/*/.claude-plugin/types/
+
+# Runtime state, logs and local settings never belong in the repo
+.claude/
+.gemini/
+*.log
+*.tmp
+.env
+.env.*
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -6,6 +6,8 @@
   from Git Bash (as Claude Code's Bash tool does). The shell rewrote taskkill's `/PID`, `/T` and `/F`
   flags into file paths; taskkill now runs without a shell. The same code exists in the Codex plugin
   this project is based on.
+- Fix: on macOS and Linux, a `--timeout-minutes` run could leave the engine running, because the
+  engine is not a process-group leader and the group signal failed without falling back to the process.
 - `/gemini:cancel` now confirms that the processes are gone, retries once, and reports `engineStopped`.
 - Docs: status, known limitations and troubleshooting sections in the README; `npm run smoke` end-to-end test.
 
